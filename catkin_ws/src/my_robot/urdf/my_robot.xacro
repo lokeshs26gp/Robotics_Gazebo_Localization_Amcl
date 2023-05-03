@@ -6,10 +6,12 @@
 <xacro:property name="wheel_radius" value="0.2" />
 <xacro:property name="wheel_length" value="0.05" />
 <xacro:property name="ground_gap_offset" value="0.1" />
-
-
+<xacro:property name="small_wheel_radius" value="0.05" />
+<xacro:property name="small_wheel_length" value="0.025" />
 
 <xacro:include filename="$(find my_robot)/urdf/my_robot.gazebo"/>
+
+
 
 <link name="robot_footprint"></link>
 
@@ -22,7 +24,7 @@
 <link name='chassis'>
     <pose xyz="0 0 ${chassis_size_z}" rpy="0 0 0" />
     <inertial>
-    <mass value="15.0"/>
+    <mass value="10.0"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <inertia ixx="0.1" ixy="0" ixz="0" 
             iyy="0.1" iyz="0" 
@@ -43,10 +45,38 @@
             </geometry>
         <material name="Orange"/>
         </visual>
-    
+    </link>
 
+<link name='chassis_head'>
+    <pose xyz="0 0 0" rpy="0 0 0" />
+    <inertial>
+    <mass value="0.1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <inertia ixx="0.1" ixy="0" ixz="0" 
+            iyy="0.1" iyz="0" 
+            izz="0.1"/>
+    </inertial>
+
+    <collision name='chassis_head_collision'>
+    <origin xyz="0 0 ${chassis_size_z + chassis_size_z/8}" rpy=" 0 0 0"/>
+        <geometry>
+        <sphere radius="${chassis_size_x/4}"/>
+        </geometry>
+    </collision>
+
+    <visual name='chassis_head_visual'>
+    <origin xyz="0 0 ${chassis_size_z + chassis_size_z/8}" rpy=" 0 0 0"/>
+        <geometry>
+        <sphere radius="${chassis_size_x/4}"/>
+        </geometry>
+    </visual>
 </link>
-<link name="chassis_extra">
+<joint name="chassis_head_joint" type="fixed">
+<parent link="chassis"/>
+<child link="chassis_head"/>
+</joint>
+
+<link name="back_wheel_chassis">
     <pose xyz="0 0 ${chassis_size_z}" rpy="0 0 0" />
     <inertial>
     <mass value="1.0"/>
@@ -56,59 +86,29 @@
             izz="0.1"/>
     </inertial>
 
-            <collision name='chassis_caster_stand_collision'>
-        <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0 ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
-            <geometry>
-            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2}"/>
-            </geometry>
-        </collision>
+    <collision name='back_wheel_chassis_collision'>
+    <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0 ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
+        <geometry>
+        <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2}"/>
+        </geometry>
+    </collision>
 
-        <visual name='chassis_caster_stand_visual'>
-        <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
-            <geometry>
-            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
-            </geometry>
-         <material name="chassis_extra"/>
-        </visual>
-          <collision name='chassis_caster_stand_collision'>
-        <origin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
-            <geometry>
-            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
-            </geometry>
-        </collision>
-
-        <visual name='chassis_caster_stand_visual'>
-        <origin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0- ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
-            <geometry>
-            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
-            </geometry>
-          <material name="chassis_extra"/>
-        </visual>
-
-        <collision name='chassis_head_collision'>
-        <origin xyz="0 0 ${chassis_size_z + chassis_size_z/8}" rpy=" 0 0 0"/>
-            <geometry>
-            <sphere radius="${chassis_size_x/4}"/>
-            </geometry>
-        </collision>
-
-        <visual name='chassis_head_visual'>
-        <origin xyz="0 0 ${chassis_size_z + chassis_size_z/8}" rpy=" 0 0 0"/>
-            <geometry>
-            <sphere radius="${chassis_size_x/4}"/>
-            </geometry>
-        <material name="chassis_extra"/>
-        </visual>
+    <visual name='back_wheel_chassis_visual'>
+    <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
+        <geometry>
+        <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
+        </geometry>
+        <material name="brown"/>
+    </visual>
 
 </link>
-<joint name="chassis_extra_joint" type="fixed">
-<orgin xyz="0 0 0" rpy="0 0 0"/>
+<joint name="back_wheel_chassis_joint" type="fixed">
 <parent link="chassis"/>
-<child link="chassis_extra"/>
+<child link="back_wheel_chassis"/>
 </joint>
 
-<link name="back_chassis_caster">
-    <pose xyz="0 0 ${chassis_size_z}" rpy="0 0 0" />
+<link name="back_chassis_wheel">
+    <pose xyz="0 0 0" rpy="0 0 0" />
     <inertial>
     <mass value="0.1"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -117,66 +117,105 @@
             izz="0.1"/>
     </inertial>
    
-    <collision name='back_caster_collision'>
-    <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0 ${-chassis_size_z/2.0+ground_gap_offset/2.0}" rpy=" 0 0 0"/>
-        <geometry>
-        <sphere radius="${ground_gap_offset/2}"/>
-        </geometry>
-    </collision>
-
-    <visual name='back_caster_visual'>
-    <origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0 ${-chassis_size_z/2.0+ground_gap_offset/2.0}" rpy=" 0 0 0"/>
+    <collision name='back_chassis_wheel_collision'>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
         <sphere radius="${ground_gap_offset/2.0}"/>
         </geometry>
-        <material name="Blue"/>
+    </collision>
+
+    <visual name='back_chassis_wheel_visual'>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+        <sphere radius="${ground_gap_offset/2.0}"/>
+        </geometry>
+        <material name = "back_chassis_wheel">
+            <color rgba="1 0 0 1"/>
+            </material>
     </visual>
 </link>
-<link name="front_chassis_caster">
+
+<joint name="back_chassis_caster_hinge" type="continuous">
+<origin xyz="${-(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0- ground_gap_offset/2.0))}" rpy="0 0 0"/>
+<parent link="chassis"/>
+<child link="back_chassis_wheel"/>
+<axis xyz="0 1 0" rpy="0 0 0"/>
+<axis2 xyz="1 0 0" rpy="0 0 0"/>
+</joint>
+
+
+<link name="front_wheel_chassis">
     <pose xyz="0 0 ${chassis_size_z}" rpy="0 0 0" />
     <inertial>
-    <mass value="0.1"/>
+    <mass value="1.0"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <inertia ixx="0.1" ixy="0" ixz="0" 
             iyy="0.1" iyz="0" 
             izz="0.1"/>
     </inertial>
-        <collision name='front_caster_collision'>
-        <origin xyz="${chassis_size_x/2.0 - ground_gap_offset/2.0} 0 ${-chassis_size_z/2.0+ground_gap_offset/2.0}" rpy=" 0 0 0"/>
+
+          <collision name='front_wheel_chassis_collision'>
+        <origin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0 - ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
             <geometry>
-            <sphere radius="${ground_gap_offset/2.0}"/>
+            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
             </geometry>
         </collision>
 
-        <visual name='front_caster_visual'>
-        <origin xyz="${chassis_size_x/2.0 - ground_gap_offset/2.0} 0 ${-chassis_size_z/2.0+ground_gap_offset/2.0}" rpy=" 0 0 0"/>
+        <visual name='front_wheel_chassis_visual'>
+        <origin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0- ground_gap_offset/2.0)/2.0)}" rpy=" 0 0 0"/>
             <geometry>
-            <sphere radius="${ground_gap_offset/2.0}"/>
+            <box size="${ground_gap_offset} ${ground_gap_offset} ${chassis_size_z/2.0 - ground_gap_offset/2.0}"/>
             </geometry>
-            <material name="Blue"/>
+          <material name="Gray"/>
         </visual>
 
 </link>
-
-<joint type="revolute" name="back_caster_joint">
-<orgin xyz="0 0 0" rpy="0 0 0"/>
+<joint name="front_wheel_chassis_joint" type="fixed">
+<orgin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0- ground_gap_offset/2.0)/2.0)}" rpy="0 0 0"/>
 <parent link="chassis"/>
-<child link="back_chassis_caster"/>
-<axis xyz="0 1 0" rpy="0 0 0"/>
-<axis2 xyz="1 0 0" rpy="0 0 0"/>
-<limit effort="1000.0" lower="0.0" upper="3.14" velocity="0.5"/>
+<child link="front_wheel_chassis"/>
 </joint>
 
-<joint name="front_caster_joint" type="revolute">
-<orgin xyz="${chassis_size_x/2.0 - ground_gap_offset/2.0} 0 ${-chassis_size_z/2.0+ground_gap_offset/2.0}" rpy="0 0 0"/>
+
+<link name="front_chassis_wheel">
+<pose xyz="0 0 0" rpy="0 0 0" />
+     <inertial>
+        <mass value="5.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0" ixz="0" 
+                iyy="0.1" iyz="0" 
+                izz="0.1"/>
+        </inertial>
+   
+    <collision name='front_chassis_wheel_collision'>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+        <sphere radius="${ground_gap_offset/2.0}"/>
+        </geometry>
+    </collision>
+
+    <visual name='front_chassis_wheel_visual'>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+        <sphere radius="${ground_gap_offset/2.0}"/>
+        </geometry>
+        <material name = "front_chassis_wheel">
+            <color rgba="1 0 0 1"/>
+            </material>
+    </visual>
+</link>
+
+
+<joint name="front_chassis_caster_hinge" type="continuous">
+<origin xyz="${(chassis_size_x/2.0 - ground_gap_offset/2.0)} 0  ${-((chassis_size_z/2.0- ground_gap_offset/2.0))}" rpy="0 0 0"/>
 <parent link="chassis"/>
-<child link="front_chassis_caster"/>
+<child link="front_chassis_wheel"/>
 <axis xyz="0 1 0" rpy="0 0 0"/>
-<axis2 xyz="1 0 0" rpy="0 0 0"/> 
-<limit effort="1000.0" lower="0.0" upper="3.14" velocity="0.5"/>
+<axis2 xyz="1 0 0" rpy="0 0 0"/>
 </joint>
 
 <link name='left_wheel'>
+<pose xyz="0 0 0" rpy="0 0 0" />
         <inertial>
         <mass value="5.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -186,14 +225,14 @@
         </inertial>
 
     <collision name='left_wheel_collision'>
-        <origin xyz="0 ${chassis_size_y/2.0 + wheel_length/2.0} 0" rpy="0 1.5707 1.5707"/>
+        <origin xyz="0 ${wheel_length/2} 0" rpy="0 1.5707 1.5707"/>
             <geometry>
             <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
             </geometry>
             </collision>
 
         <visual name='left_wheel_visual'>
-        <origin xyz="0 ${chassis_size_y/2.0 + wheel_length/2.0} 0" rpy=" 0 1.5707 1.5707"/>
+        <origin xyz="0 ${wheel_length/2} 0" rpy=" 0 1.5707 1.5707"/>
             <geometry>
             <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
             </geometry>
@@ -202,17 +241,14 @@
 </link>
 
 <joint name="left_wheel_hinge" type="continuous">
-<orgin xyz="0 ${chassis_size_y/2.0+0.1} 0" rpy="0 0 0"/>
+<origin xyz="0 ${chassis_size_y/2} 0" rpy="0 0 0"/>
 <parent link="chassis"/>
 <child link="left_wheel"/>
 <axis xyz="0 1 0" rpy="0 0 0"/>
-<limit effort="10000" velocity="1000"/>
-<dynamics damping="1.0" friction="0.01"/>
 </joint>
 
-
 <link name='right_wheel'>
-
+<pose xyz="0 0 0" rpy="0 0 0" />
         <inertial>
         <mass value="5.0"/>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -222,14 +258,14 @@
         </inertial>
 
     <collision name='right_wheel_collision'>
-        <origin xyz="0 ${-(chassis_size_y/2.0 + wheel_length/2.0)} 0" rpy="0 1.5707 1.5707"/>
+        <origin xyz="0 ${-wheel_length/2} 0" rpy="0 1.5707 1.5707"/>
             <geometry>
             <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
             </geometry>
         </collision>
 
         <visual name='right_wheel_visual'>
-        <origin xyz="0 ${-(chassis_size_y/2.0 + wheel_length/2.0)} 0" rpy=" 0 1.5707 1.5707"/>
+        <origin xyz="0 ${-wheel_length/2} 0" rpy=" 0 1.5707 1.5707"/>
             <geometry>
             <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
             </geometry>
@@ -239,21 +275,13 @@
         </visual>
 </link>
 
-
-
-
-
-
-
-
 <joint name="right_wheel_hinge" type="continuous">
-<orgin xyz="0 ${-chassis_size_y/2.0-0.1} 0" rpy="0 0 0"/>
+<origin xyz="0 ${-chassis_size_y/2} 0" rpy="0 0 0"/>
 <parent link="chassis"/>
 <child link="right_wheel"/>
 <axis xyz="0 1 0" rpy="0 0 0"/>
-<limit effort="10000" velocity="1000"/>
-<dynamics damping="1.0" friction="0.01"/>
 </joint>
+
 
 <!---camera-->
 
@@ -284,9 +312,6 @@
     </collision>
 
 </link>
-
-
-
 
 <!--lidar-->
 <link name="hokuyo">
@@ -334,8 +359,21 @@
 <dynamics damping="1.0" friction="1.0"/>
 </joint>
 
- <gazebo reference="camera">
+
+<gazebo reference="camera">
     <material>Gazebo/Green</material>
+  </gazebo>
+
+   <gazebo reference="back_wheel_chassis">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="front_wheel_chassis">
+      <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Orange</material>
   </gazebo>
 
    <gazebo reference="left_wheel">
@@ -345,21 +383,18 @@
    <gazebo reference="right_wheel">
     <material>Gazebo/Red</material>
   </gazebo>
+  <gazebo reference="back_chassis_wheel">
+    <material>Gazebo/Red</material>
+  </gazebo>
+   <gazebo reference="front_chassis_wheel">
+    <material>Gazebo/Red</material>
+  </gazebo>
 
   <gazebo reference="chassis">
     <material>Gazebo/Orange</material>
   </gazebo>
 
-<gazebo reference="chassis_extra">
-    <material>Gazebo/Blue</material>
-  </gazebo>
+ 
 
-<gazebo reference="back_chassis_caster">
-    <material>Gazebo/OraBluenge</material>
-  </gazebo>
 
-<gazebo reference="front_chassis_caster">
-    <material>Gazebo/Blue</material>
-  </gazebo>
 </robot>
-
